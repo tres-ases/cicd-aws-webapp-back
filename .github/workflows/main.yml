@@ -36,7 +36,7 @@ jobs:
           node-version: '12'
 
       - name: Build
-      run: |
+        run: |
           npm install claudia -g
           npm install typescript@latest -g
           ./build.sh
