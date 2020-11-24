@@ -1,0 +1,70 @@
+openapi: 3.0.1
+info:
+  title: Simple WebApp
+  description: simple example
+  contact:
+    name: Julio Villane
+    email: jvillane@gmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+
+x-amazon-apigateway-request-validators:
+  body:
+    validateRequestParameters: false
+    validateRequestBody: true
+  params:
+    validateRequestParameters: true
+    validateRequestBody: false
+  all:
+    validateRequestParameters: true
+    validateRequestBody: true
+
+paths:
+  /users:
+    get:
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UsersGet.Arn}/invocations
+        httpMethod: POST
+        type: aws
+        responses:
+          default:
+            statusCode: 200
+            schema:
+              $ref: '#/components/responses/Users'
+      summary: the users list
+      responses:
+        200:
+          $ref: '#/components/responses/Users'
+
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      properties:
+        Id:
+          type: number
+        Name:
+          type: string
+        CreatedAt:
+          type: string
+        Active:
+          type: boolean
+      required:
+        - Name
+    UserList:
+      title: List of users
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+
+  responses:
+    Users:
+      description: List of users
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserList'

@@ -1,0 +1,111 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  El backend de una aplicación web minimalista
+
+Parameters:
+  OpenAPIS3File:
+    Description: '"openapi.yaml" file location'
+    Default: ./openapi.yaml
+    Type: String
+  UsersTableName:
+    Description: Nombre de la tabla de usuarios en Dynamo
+    Type: AWS::SSM::Parameter::Value<AWS::String>
+
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    Timeout: 30
+    MemorySize: 256
+    Environment:
+      Variables:
+        USERS_TABLE_NAME: !Ref UsersTableName
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-lambda-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: WriteCloudWatchLogs
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:GetItem
+                  - dynamodb:Scan
+                  - dynamodb:Query
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTableName}
+
+  UserTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: cicd-webapp-table-user
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: N
+        - AttributeName: Active
+          AttributeType: N
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: ActiveIndex
+          KeySchema:
+            - AttributeName: Active
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  WebappApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: api
+      Name: !Sub ${AWS::StackName}-api
+      DefinitionBody:
+        'Fn::Transform':
+          Name: AWS::Include
+          Parameters:
+            Location: !Ref OpenAPIS3File
+
+  UsersGet:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist
+      Handler: user.getAll
+      Role: !GetAtt LambdaRole.Arn
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref WebappApi
+            Path: /users
+            Method: get
+
+Outputs:
+  ApiUrl:
+    Description: API URL
+    Value: !Sub https://${WebappApi}.execute-api.${AWS::Region}.amazonaws.com/api

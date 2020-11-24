@@ -1,0 +1,18 @@
+{
+  "name": "tgr-automated-test-suite-mocks",
+  "version": "1.0.0",
+  "description": "Automated testing application for mocking TGR apps",
+  "main": "index.ts",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Patagonia IT - Julio Villane",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.64",
+    "@types/node": "^14.14.9",
+    "aws-sdk": "2.798.0",
+    "typescript": "4.1.2"
+  }
+}
