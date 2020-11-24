@@ -34,11 +34,11 @@ jobs:
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '12'
-            run: |
-              npm install claudia -g
-              npm install typescript@latest -g
-              ./build.sh
-              ls ./dist/src
+        run: |
+          npm install claudia -g
+          npm install typescript@latest -g
+          ./build.sh
+          ls ./dist/src
       
       - name: Deploy
         uses: tkt-actions/aws-sam-cli@v1
