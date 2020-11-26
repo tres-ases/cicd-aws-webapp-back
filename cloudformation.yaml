@@ -59,27 +59,6 @@ Resources:
                 Resource:
                   - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${UsersTableName}
 
-  UserTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: cicd-webapp-table-user
-      BillingMode: PAY_PER_REQUEST
-      AttributeDefinitions:
-        - AttributeName: Id
-          AttributeType: N
-        - AttributeName: Active
-          AttributeType: N
-      KeySchema:
-        - AttributeName: Id
-          KeyType: HASH
-      GlobalSecondaryIndexes:
-        - IndexName: ActiveIndex
-          KeySchema:
-            - AttributeName: Active
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
-
   WebappApi:
     Type: AWS::Serverless::Api
     Properties:
