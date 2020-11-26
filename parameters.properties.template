@@ -1,1 +1,1 @@
-UsersTableName=/cicd-webapp/base/table/user
+UsersTableName=/cosmos/dynamodb/table/cicd-webapp-table-user/id
