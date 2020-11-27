@@ -1,1 +1,2 @@
-UsersTableName=DBNAME
+UsersTableName=DB_NAME
+UserPoolArn=USER_POOL_ARN

@@ -11,6 +11,9 @@ Parameters:
   UsersTableName:
     Description: Nombre de la tabla de usuarios en Dynamo
     Type: AWS::SSM::Parameter::Value<AWS::String>
+  UserPoolArn:
+    Description: Arn del UserPool de Cognito
+    Type: 'AWS::SSM::Parameter::Value<AWS::String>'
 
 Globals:
   Function:
@@ -69,6 +72,10 @@ Resources:
           Name: AWS::Include
           Parameters:
             Location: !Ref OpenAPIS3File
+      Auth:
+        Authorizers:
+          CUPAuthorizer:
+            UserPoolArn: !Ref UserPoolArn
 
   UsersGet:
     Type: AWS::Serverless::Function
@@ -83,6 +90,7 @@ Resources:
             RestApiId: !Ref WebappApi
             Path: /users
             Method: get
+
   WebappAPIId:
     Type: AWS::SSM::Parameter
     Properties:
