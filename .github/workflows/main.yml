@@ -1,9 +1,13 @@
 name: Back Actions
 on:
   push:
-    branches: [ dev ]
+    branches:
+      - dev
+      - master
   pull_request:
-    branches: [ dev ]
+    branches: 
+      - dev
+      - master
   workflow_dispatch:
 jobs:
   build:
