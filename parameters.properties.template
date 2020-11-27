@@ -1,1 +1,1 @@
-UsersTableName=/cosmos/dynamodb/table/cicd-webapp-table-user/id
+UsersTableName=/cosmos/${GITHUB_REF##*/}/dynamodb/table/cicd-webapp-table-user/id
