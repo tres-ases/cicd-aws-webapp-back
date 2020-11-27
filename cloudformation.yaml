@@ -83,6 +83,13 @@ Resources:
             RestApiId: !Ref WebappApi
             Path: /users
             Method: get
+  WebappAPIId:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /cosmos/backend/${AWS::StackName}/apigateway/id
+      Type: String
+      Value: !Ref WebappApi
+      Description: SSM Parameter for apigateway id
 
 Outputs:
   ApiUrl:
